@@ -7,6 +7,6 @@
  */
 
 
-foreach (glob('./lib/*.php') as $file) {
-    if ($file != './lib/loader.php') require_once $file;
+foreach (glob('./src/*.php') as $file) {
+    if ($file != './src/loader.php') require_once $file;
 }
