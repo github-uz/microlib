@@ -18,7 +18,7 @@ class CallbackHandler
         $this->api = $api;
     }
 
-    public function process($callback)
+    public function process($callback, $state = null)
     {
 
     }
