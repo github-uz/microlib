@@ -134,6 +134,14 @@ class Api
         return $this->request('editMessagereplymarkup', $data);
     }
 
+    function get_chat_member($chat_id,$user_id){
+        $data = [
+            'chat_id'=>$chat_id,
+            'user_id'=>$user_id
+        ];
+        return $this->request('getChatmember',$data);
+    }
+
 
     function keyboard($buttons, $size = 1)
     {
@@ -148,12 +156,12 @@ class Api
         return json_encode($keyboard);
     }
 
-    function callback_keyboard($text, $callback, $size = 1)
+    function callback_keyboard($texts, $callback_data, $size = 1)
     {
         $keyboard = [
             'inline_keyboard' => []];
-        foreach ($text as $key => $value) {
-            $keyboard['inline_keyboard'][] = ['text' => $value, 'callback_data' => $callback[$key]];
+        foreach ($texts as $key => $value) {
+            $keyboard['inline_keyboard'][] = ['text' => $value, 'callback_data' => $callback_data[$key]];
         }
         $keyboard['inline_keyboard'] = array_chunk($keyboard['inline_keyboard'], $size);
         return json_encode($keyboard);
@@ -198,9 +206,10 @@ class Api
                      */
                     if (preg_match("#" . $handler['regex'] . "#", $text)) {
                         if ($handler['state']) {
-                            if (preg_match("#" . $handler['state'] . "#", User::get_state_byId($update['message']['chat']['id']))) {
+                            $state = User::get_state_byId($update['message']['chat']['id']);
+                            if (preg_match("#" . $handler['state'] . "#", $state)) {
                                 $handle = new $handler['handler']($this);
-                                $handle->process($update['message']);
+                                $handle->process($update['message'], $state);
                             } else {
                                 continue;
                             }
@@ -220,7 +229,8 @@ class Api
                      * @var PhotoHandler $handle
                      */
                     if ($handler['state']) {
-                        if (preg_match("#" . $handler['state'] . "#", User::get_state_byId($update['message']['chat']['id']))) {
+                        $state = User::get_state_byId($update['message']['chat']['id']);
+                        if (preg_match("#" . $handler['state'] . "#", $state)) {
                             $handle = new $handler['handler']($this);
                             $handle->process($update['message']);
                         } else {
@@ -245,7 +255,8 @@ class Api
                  */
                 if (preg_match("#" . $handler['regex'] . "#", $data)) {
                     if ($handler['state']) {
-                        if (preg_match("#" . $handler['state'] . "#", User::get_state_byId($update['message']['chat']['id']))) {
+                        $state = User::get_state_byId($update['callback_query']['from']['id']);
+                        if (preg_match("#" . $handler['state'] . "#", $state)) {
                             $handle = new $handler['handler']($this);
                             $handle->process($update['callback_query']);
                         } else {

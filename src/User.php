@@ -50,16 +50,17 @@ class User
      */
     public static function get_state_byId($id)
     {
-        return file_get_contents('./state/' . $id);
+        return file_exists('./state/' . $id) ? file_get_contents('./state/' . $id) : null;
     }
 
     /*
      * set_state_byId is used to set users state without creating object of class User
      */
-    public static function set_state_byId($id, $state)
+    public static function set_state_byId($id, $state = false)
     {
         if (is_dir('./state')) {
-            file_put_contents('./state/' . $id, $state);
+            if ($state) file_put_contents('./state/' . $id, $state);
+            else unlink('./state/' . $id);
         } else {
             mkdir('./state');
             file_put_contents('./state/' . $id, $state);
